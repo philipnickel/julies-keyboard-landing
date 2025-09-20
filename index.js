@@ -59,60 +59,33 @@ window.addEventListener("resize", responsive)
 gsap.registerPlugin(ScrollTrigger)
 
 
-gsap.to(".reveal-up", {
+// Set initial state for reveal animations
+gsap.set(".reveal-up", {
     opacity: 0,
-    y: "100%",
+    y: 50,
 })
 
-gsap.to("#dashboard", {
-    boxShadow: "0px 15px 25px -5px #7e22ceaa",
-    duration: 0.3,
-    scrollTrigger: {
-        trigger: "#hero-section",
-        start: "60% 60%",
-        end: "80% 80%",
-        // markers: true
-    }
-
-})
-
-// straightens the slanting image
-gsap.to("#dashboard", {
-
-    scale: 1,
-    translateY: 0,
-    // translateY: "0%",
-    rotateX: "0deg",
-    scrollTrigger: {
-        trigger: "#hero-section",
-        start: window.innerWidth > RESPONSIVE_WIDTH ? "top 95%" : "top 70%",
-        end: "bottom bottom",
-        scrub: 1,
-        // markers: true,
-    }
-
-})
-
+// FAQ accordion functionality (if it exists)
 const faqAccordion = document.querySelectorAll('.faq-accordion')
 
-faqAccordion.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-        this.classList.toggle('active')
+if (faqAccordion.length > 0) {
+    faqAccordion.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            this.classList.toggle('active')
 
-        // Toggle 'rotate' class to rotate the arrow
-        let content = this.nextElementSibling
+            // Toggle 'rotate' class to rotate the arrow
+            let content = this.nextElementSibling
 
-        // content.classList.toggle('!tw-hidden')
-        if (content.style.maxHeight === '200px') {
-            content.style.maxHeight = '0px'
-            content.style.padding = '0px 18px'
-
-        } else {
-            content.style.maxHeight = '200px'
-            content.style.padding = '20px 18px'
-        }
+            if (content.style.maxHeight === '200px') {
+                content.style.maxHeight = '0px'
+                content.style.padding = '0px 18px'
+            } else {
+                content.style.maxHeight = '200px'
+                content.style.padding = '20px 18px'
+            }
+        })
     })
-})
+}
 
 
 
@@ -122,22 +95,50 @@ faqAccordion.forEach(function (btn) {
 const sections = gsap.utils.toArray("section")
 
 sections.forEach((sec) => {
+    const revealElements = sec.querySelectorAll(".reveal-up")
 
-    const revealUptimeline = gsap.timeline({paused: true, 
-                                            scrollTrigger: {
-                                                            trigger: sec,
-                                                            start: "10% 80%", // top of trigger hits the top of viewport
-                                                            end: "20% 90%",
-                                                            // markers: true,
-                                                            // scrub: 1,
-                                                        }})
+    // Only create animations if elements exist
+    if (revealElements.length > 0) {
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: sec,
+                start: "top 85%",
+                end: "bottom 15%",
+                toggleActions: "play none none reverse",
+                // markers: false,
+            }
+        })
+        .to(revealElements, {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "power2.out"
+        })
+    }
+})
 
-    revealUptimeline.to(sec.querySelectorAll(".reveal-up"), {
-        opacity: 1,
-        duration: 0.8,
-        y: "0%",
-        stagger: 0.2,
+// ------------- card hover animations ---------------
+
+const cards = gsap.utils.toArray("a[class*='tw-cursor-pointer']")
+
+cards.forEach(card => {
+    // Set initial state
+    gsap.set(card, { scale: 1 })
+
+    card.addEventListener("mouseenter", () => {
+        gsap.to(card, {
+            scale: 1.05,
+            duration: 0.3,
+            ease: "power2.out"
+        })
     })
 
-
+    card.addEventListener("mouseleave", () => {
+        gsap.to(card, {
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out"
+        })
+    })
 })
